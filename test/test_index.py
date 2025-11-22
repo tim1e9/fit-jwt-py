@@ -74,7 +74,7 @@ class TestIndexModule(unittest.TestCase):
         
         # Mock the token response
         mock_token_response = create_mock_response({
-            'accessToken': 'refA',
+            'access_token': 'refA',
             'id_token': 'refB',
             'refresh_token': 'refC'
         })

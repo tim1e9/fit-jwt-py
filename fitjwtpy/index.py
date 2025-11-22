@@ -212,7 +212,7 @@ def refresh_jwt_token(refresh_token: str) -> JwtTokens:
             
         # Format the response to include the three retrieved tokens
         jwt_tokens = JwtTokens(
-            all_data.get('accessToken'),
+            all_data.get('access_token'),
             all_data.get('id_token'),
             all_data.get('refresh_token')
         )

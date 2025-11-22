@@ -1,0 +1,45 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fit-jwt-py"
+version = "0.9.22"
+description = "A lightweight Python library for working with JWT and OIDC"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Tim Crowley", email = "tim1e9@users.noreply.github.com"}
+]
+keywords = ["JWT", "OIDC", "OAUTH", "fit", "Python"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Security",
+]
+requires-python = ">=3.11"
+dependencies = [
+    "cryptography>=41.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/tim1e9/fit-jwt-py"
+Repository = "https://github.com/tim1e9/fit-jwt-py.git"
+Issues = "https://github.com/tim1e9/fit-jwt-py/issues"
+
+[project.optional-dependencies]
+dev = [
+    "python-dotenv>=1.0.0",
+]
+
+[tool.setuptools.packages.find]
+include = ["fitjwtpy*"]
+exclude = ["test*", "old*", "_samples*"]
+
+[tool.setuptools.package-data]
+fitjwtpy = ["py.typed", "*.pyi"]

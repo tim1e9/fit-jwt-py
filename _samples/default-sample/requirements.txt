@@ -1,0 +1,11 @@
+# Sample requirements for the default-sample server
+
+# For loading environment variables
+python-dotenv>=1.0.0
+
+# Flask web framework
+flask>=3.0.0
+
+# The fitjwtpy library - installed from private PyPI server
+# Configure pip to use http://noobnoob.io:8888 (see pip.conf)
+fit-jwt-py>=0.9.0

@@ -12,7 +12,8 @@ from .index import (
     get_pkce_details,
     get_jwt_token,
     refresh_jwt_token,
-    get_user_from_token
+    get_user_from_token,
+    is_token_valid
 )
 
 __all__ = [
@@ -23,7 +24,8 @@ __all__ = [
     'get_pkce_details',
     'get_jwt_token',
     'refresh_jwt_token',
-    'get_user_from_token'
+    'get_user_from_token',
+    'is_token_valid'
 ]
 
-__version__ = '0.9.22'
+__version__ = '0.9.23'

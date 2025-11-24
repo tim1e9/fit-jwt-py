@@ -15,6 +15,7 @@ from fitjwtpy import (
     get_auth_url,
     get_pkce_details,
     get_jwt_token,
+    is_token_valid,
     refresh_jwt_token,
     get_user_from_token,
     init
@@ -60,6 +61,18 @@ def auth_callback():
         # Note: get_jwt_token() can throw an exception. A real app should catch and handle it.
         jwt_components = get_jwt_token(code, pkce_details['codeVerifier'])
         
+        # An additional audience check for the id_token. This will throw a ValueError if something is wrong
+        # consider gracefully returning the error in a real application
+        is_token_valid(jwt_components.id_token, "id_token")
+
+        # Some notes for your consideration:
+        # Consider pulling and validating ID token's "sub" claim, and use it to create / look up the user
+        # It may be something like: ABCD-1234-EFGH-5678-IJKL9012MNOPQ
+        # You can then map that to something like email, so that a human can understand it.
+
+        # The ID token can be used to display user friendly stuff in the UI
+        # The access token is what should be used when making API calls.
+
         # Clear the cookie - it's no longer needed
         response = make_response(jsonify({
             'accessToken': jwt_components.access_token,
@@ -85,11 +98,14 @@ def logout_callback():
 def check_authenticated(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        token = request.headers.get(JWT_HEADER_NAME)
-        if not token:
+        access_token = request.headers.get(JWT_HEADER_NAME)
+        if not access_token:
             return jsonify({'message': 'User does not have credentials'}), 401
         
-        user = get_user_from_token(token)
+        # It might be a good idea to make sure the user didn't mistakenly send in the id_token
+        # It's a common mistake, but for now, it's left as an open to do.
+
+        user = get_user_from_token(access_token)
         if not user:
             return jsonify({'message': 'User details are missing. Does the user have valid credentials?'}), 401
         

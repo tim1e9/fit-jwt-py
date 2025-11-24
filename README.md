@@ -123,13 +123,13 @@ To publish to a private PyPI registry (e.g. JFrog Artifactory, Nexus, or self-ho
 
 ```bash
 # Example for a private registry
-PRIVATE_REPO_URL=http://noobnoob.io:8888
+PRIVATE_REPO_URL=http://noobnoob.local:8888
 ```
 
 2. **Upload to your private registry**:
 
 ```bash
-python -m twine upload --verbose --repository-url http://noobnoob.io:8888 dist/*
+python -m twine upload --verbose --repository-url http://noobnoob.local:8888 dist/*
 ```
 
 When prompted, enter your private registry credentials (username and password/token).

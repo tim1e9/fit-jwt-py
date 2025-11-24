@@ -46,6 +46,11 @@ def refresh_jwt_token(refresh_token: str) -> JwtTokens:
     ...
 
 
+def is_token_valid(cur_token: str, token_type: str) -> bool:
+    """Validate a JWT token by checking signature, audience, issuer, and expiration."""
+    ...
+
+
 def get_user_from_token(access_token: str) -> Optional[Dict[str, Any]]:
     """Extract and validate user information from an access token."""
     ...

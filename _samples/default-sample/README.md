@@ -51,7 +51,7 @@ Steps to run:
    this isn't a real application, and client-side persistence isn't implemented, you may need
    to copy the ID token and use it in the following curl command:
    ```bash
-   export TMP_AUTH=<place the idtoken value here>
+   export TMP_AUTH=<place the access token value here>
    curl -H "Authorization: $TMP_AUTH" http://localhost:3000/aboutme
    ```
    

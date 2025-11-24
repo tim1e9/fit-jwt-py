@@ -127,7 +127,7 @@ def get_token_url() -> str:
     return _ev['TOKEN_ENDPOINT']
 
 
-def _is_valid_signature(raw_token: str) -> bool:
+def is_valid_signature(raw_token: str) -> bool:
     """
     Validate the JWT signature using RS256 algorithm.
     
@@ -175,49 +175,4 @@ def _is_valid_signature(raw_token: str) -> bool:
             
     except Exception as exc:
         print(f"Error verifying the JWT signature: {exc}")
-        return False
-
-
-def is_token_valid(cur_token: str) -> bool:
-    """
-    Validate a JWT token by checking signature, audience, issuer, and expiration.
-    
-    Args:
-        cur_token: The JWT token to validate
-        
-    Returns:
-        True if token is valid, False otherwise
-    """
-    try:
-        parts = cur_token.split('.')
-        if len(parts) != 3:
-            raise ValueError("Invalid token format")
-            
-        _jwt_header, jwt_payload, _jwt_signature = parts
-        
-        # Validate signature
-        if not _is_valid_signature(cur_token):
-            raise ValueError("The JSON signature is not valid.")
-        
-        # Decode payload
-        jwt_details = json.loads(base64.urlsafe_b64decode(jwt_payload + '==').decode('utf-8'))
-        
-        # Verify audience matches client ID
-        if jwt_details.get('aud') != _ev['CLIENT_ID']:
-            raise ValueError("The token audience doesn't match what was sent")
-        
-        # Verify issuer (check if JWKS_URL contains the issuer)
-        if jwt_details.get('iss') not in _ev['JWKS_URL']:
-            raise ValueError("The issuer for the token is different from what is expected.")
-        
-        # Check token expiration
-        exp_time = jwt_details.get('exp', 0) * 1000  # Convert to milliseconds
-        cur_time = int(time.time() * 1000)
-        if exp_time < cur_time:
-            raise ValueError("The token has expired")
-        
-        return True
-        
-    except Exception as exc:
-        print(f"Error parsing the jwtDetails from a token: {exc}")
         return False

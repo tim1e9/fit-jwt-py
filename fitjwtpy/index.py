@@ -6,6 +6,7 @@ import os
 import base64
 import hashlib
 import json
+import time
 from typing import Optional, Dict, Any
 from urllib.request import urlopen, Request
 from urllib.parse import urlencode
@@ -14,7 +15,7 @@ from .utils import (
     get_environment_variables,
     get_oidc_provider_url,
     get_token_url,
-    is_token_valid
+    is_valid_signature
 )
 
 
@@ -224,6 +225,59 @@ def refresh_jwt_token(refresh_token: str) -> JwtTokens:
         raise Exception(msg)
 
 
+def is_token_valid(cur_token: str, token_type: str) -> bool:
+    """
+    Validate a JWT token by checking signature, audience, issuer, and expiration.
+    
+    Args:
+        cur_token: The JWT token to validate
+        
+    Returns:
+        True if token is valid, False otherwise
+    """
+    try:
+        # only 'id_token' or 'access_token' values are valid
+        if token_type not in ['id_token', 'access_token']:
+            raise ValueError("Invalid token type. Only 'id_token' or 'access_token' are allowed.")
+        
+        parts = cur_token.split('.')
+        if len(parts) != 3:
+            raise ValueError("Invalid token format")
+            
+        _jwt_header, jwt_payload, _jwt_signature = parts
+        
+        # Validate signature
+        if not is_valid_signature(cur_token):
+            raise ValueError("The JSON signature is not valid.")
+        
+        # Decode payload
+        jwt_details = json.loads(base64.urlsafe_b64decode(jwt_payload + '==').decode('utf-8'))
+
+        # Verify issuer (check if JWKS_URL contains the issuer)
+        if jwt_details.get('iss') not in _ev['JWKS_URL']:
+            raise ValueError("The issuer for the token is different from what is expected.")
+
+        if token_type == 'id_token':
+            # Verify audience matches client ID
+            if jwt_details.get('aud') != _ev['CLIENT_ID']:
+                raise ValueError("The token audience doesn't match what was sent")        
+
+        # Check token expiration
+        exp_time = jwt_details.get('exp', 0) * 1000  # Convert to milliseconds
+        cur_time = int(time.time() * 1000)
+        if exp_time < cur_time:
+            raise ValueError("The token has expired")
+        
+        return True
+        
+    except Exception as exc:
+        print(f"Error parsing the jwtDetails from a token: {exc}")
+        return False
+
+
+# This can get confusing. This is called to access resources, so we really need
+# the access token. However, we're grabbing the current user's details, so it feels
+# like we should use the id_token. Resist the urge to use the id_token. What a mess.
 def get_user_from_token(access_token: str) -> Optional[Dict[str, Any]]:
     """
     Extract and validate user information from an access token.
@@ -234,7 +288,7 @@ def get_user_from_token(access_token: str) -> Optional[Dict[str, Any]]:
     Returns:
         Dictionary containing user information, or None if token is invalid
     """
-    if not is_token_valid(access_token):
+    if not is_token_valid(access_token, "access_token"):
         return None
     
     try:

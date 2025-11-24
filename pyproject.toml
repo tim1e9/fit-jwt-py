@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fit-jwt-py"
-version = "0.9.22"
+version = "0.9.23"
 description = "A lightweight Python library for working with JWT and OIDC"
 readme = "README.md"
 license = {text = "MIT"}
